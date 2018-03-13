@@ -1,8 +1,4 @@
 import {
-  Message
-} from '@phosphor/messaging';
-
-import {
   Widget
 } from '@phosphor/widgets';
 
@@ -111,14 +107,14 @@ class LifeWidget extends Widget {
   /**
    * Handle `before-detach` messages.
    */
-  protected onBeforeDetach(msg: Message): void {
+  protected onBeforeDetach(): void {
     this.stop();
   }
 
   /**
    * Handle `update-request` messages.
    */
-  protected onUpdateRequest(msg: Message): void {
+  protected onUpdateRequest(): void {
     const next = this._next;
     const prev = this._prev;
     const rows = next.length;

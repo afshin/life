@@ -23,7 +23,6 @@
     "webpack-cli": "^2.0.11"
   },
   "dependencies": {
-    "@phosphor/messaging": "^1.2.2",
     "@phosphor/widgets": "^1.5.0"
   }
 }
