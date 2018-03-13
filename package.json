@@ -8,7 +8,8 @@
     "build:example": "npm run build && cd example && webpack",
     "clean": "rimraf lib && rimraf example/dist && rimraf example/lib",
     "docs": "typedoc src --out docs",
-    "watch": "tsc -w"
+    "watch": "npm run clean && tsc --watch",
+    "watch:example": "npm run build && cd example && webpack --watch"
   },
   "author": "Afshin Darian",
   "license": "MIT",
