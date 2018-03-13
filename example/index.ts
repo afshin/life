@@ -9,7 +9,7 @@ import {
 
 window.addEventListener('load', function () {
   const main = document.querySelector('main') as HTMLElement;
-  const life = new LifeWidget({
+  const life = (window as any).life = new LifeWidget({
     initial: LifeWidget.random(80, 120),
     interval: 100
   });

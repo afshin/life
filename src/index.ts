@@ -9,14 +9,30 @@ import {
 import '../style/index.css';
 
 
+/**
+ * The default likelihood that a random cell is alive.
+ */
 const LIKELIHOOD = 0.25;
 
+/**
+ * The default number of rows in a randomly generated world.
+ */
 const ROWS = 40;
+
+/**
+ * The default number of columns in a randomly generated world.
+ */
 const COLUMNS = 40;
 
+/**
+ * The default time (in ms) between generations and rendering.
+ */
 const INTERVAL = 250;
 
 
+/**
+ * A class that renders a UI for Conway's Game of Life.
+ */
 export
 class LifeWidget extends Widget {
   /**
@@ -26,7 +42,7 @@ class LifeWidget extends Widget {
     super();
 
     // Populate the initial state.
-    this.state = options.initial || LifeWidget.random(ROWS, COLUMNS);
+    this.state = options.initial || LifeWidget.random();
     this._interval = options.interval || INTERVAL;
     this._tick = options.tick || LifeWidget.tick;
 
@@ -67,14 +83,17 @@ class LifeWidget extends Widget {
         return;
       }
 
+      // Use a pointer to swap lists back so their names make semantic sense.
       if (swap = !swap) {
-        // Use a pointer to swap them back so their names make semantic sense.
         let prev = this._next;
         this._next = this._prev;
         this._prev = prev;
       }
 
+      // Calculate the new state.
       this._tick(this._prev, this._next);
+
+      // Update the UI.
       this.update();
     }, this._interval);
   }
@@ -105,17 +124,21 @@ class LifeWidget extends Widget {
     const rows = next.length;
     const columns = next[0].length;
 
-    for (let x = 0; x < rows; x += 1) {
-      for (let y = 0; y < columns; y += 1) {
-        let current = next[x][y];
+    for (let i = 0; i < rows; i += 1) {
+      for (let j = 0; j < columns; j += 1) {
+        let current = next[i][j];
+        let list = this._rows[i];
 
-        if (prev[x][y] !== current) {
-          this._rows[x][y].className = current ? 'ad-mod-alive' : '';
+        if (prev[i][j] !== current) {
+          list[j].className = current ? 'ad-mod-alive' : '';
         }
       }
     }
   }
 
+  /**
+   * Render the DOM nodes for a life widget.
+   */
   private _render(): void {
     const { node, state } = this;
 
@@ -142,34 +165,66 @@ class LifeWidget extends Widget {
 }
 
 
+/**
+ * A namespace for `LifeWidget` statics.
+ */
 export
 namespace LifeWidget {
+  /**
+   * The basic unit of life, `1` represents life.
+   */
   export
   type Bit = 1 | 0;
 
+  /**
+   * The tick function type for calculating new generations of life.
+   */
   export
   type Tick = (prev: Bit[][], next: Bit[][], fluctuation?: number) => void;
 
+  /**
+   * The instantiation options for a life widget.
+   */
   export
   interface IOptions {
+    /**
+     * The initial state of the universe, defaults to a random world.
+     */
     initial?: Bit[][];
 
+    /**
+     * The time (in ms) between generations and rendering, defaults to `250`.
+     */
     interval?: number;
 
+    /**
+     * A function used to calculate generations, defaults to `LifeWidget.tick`.
+     */
     tick?: Tick;
   }
 
+  /**
+   * Generates a random data set to initialize the state of the world.
+   *
+   * @param rows - The number of rows in the data, defaults to `40`.
+   *
+   * @param columns - The number of columns in the data, defaults to `40`.
+   *
+   * @param likelihood - The likelihood of live cell, defaults to `0.25`.
+   *
+   * @returns A two-dimensional array representing the state of the world.
+   */
   export
-  function random(rows: number, columns: number, likelihood = LIKELIHOOD): LifeWidget.Bit[][] {
+  function random(rows = ROWS, columns = COLUMNS, likelihood = LIKELIHOOD): LifeWidget.Bit[][] {
     const data = [];
 
-    for (let x = 0; x < rows; x += 1) {
+    for (let i = 0; i < rows; i += 1) {
       let row: LifeWidget.Bit[] = [];
 
       data.push(row);
 
-      for (let y = 0; y < columns; y += 1) {
-        row[y] = Math.random() < likelihood ? 1 : 0;
+      for (let j = 0; j < columns; j += 1) {
+        row[j] = Math.random() < likelihood ? 1 : 0;
       }
     }
 
@@ -199,21 +254,21 @@ namespace LifeWidget {
     const lastCol = columns - 1;
     const lastRow = rows - 1;
 
-    for (let x = 0; x < rows; x += 1) {
-      for (let y = 0; y < columns; y += 1) {
-        let alive = prev[x][y];
+    for (let i = 0; i < rows; i += 1) {
+      for (let j = 0; j < columns; j += 1) {
+        let alive = prev[i][j];
         let cell: Bit = 0;
-        let decX = x >= 1 ? x - 1 : lastRow;      // decrement x
-        let decY = y >= 1 ? y - 1 : lastCol;      // decrement y
-        let incX = x + 1 <= lastRow ? x + 1 : 0;  // increment x
-        let incY = y + 1 <= lastCol ? y + 1 : 0;  // increment y
+        let decX = i >= 1 ? i - 1 : lastRow;      // decrement x
+        let decY = j >= 1 ? j - 1 : lastCol;      // decrement y
+        let incX = i + 1 <= lastRow ? i + 1 : 0;  // increment x
+        let incY = j + 1 <= lastCol ? j + 1 : 0;  // increment y
         let neighbors = prev[decX][decY] +
-                        prev[   x][decY] +
+                        prev[   i][decY] +
                         prev[incX][decY] +
-                        prev[decX][   y] +
-                        prev[incX][   y] +
+                        prev[decX][   j] +
+                        prev[incX][   j] +
                         prev[decX][incY] +
-                        prev[   x][incY] +
+                        prev[   i][incY] +
                         prev[incX][incY];
 
         // Any live cell with fewer than two live neighbors dies.
@@ -227,17 +282,23 @@ namespace LifeWidget {
 
         // If there is a fluctuation, flip the cell value.
         if (fluctuation && Math.random() < fluctuation) {
-          cell = 1 - cell as 1 | 0;
+          cell = 1 - cell as Bit;
         }
 
-        next[x][y] = cell; // Record the tick value.
+        next[i][j] = cell; // Record the tick value.
       }
     }
   }
 }
 
 
+/**
+ * A namespace for private module data.
+ */
 namespace Private {
+  /**
+   * Create a row in the world.
+   */
   export
   function createRow(cells: LifeWidget.Bit[]): HTMLElement {
     const row = document.createElement('div');
@@ -255,6 +316,9 @@ namespace Private {
     return row;
   }
 
+  /**
+   * Create the DOM nodes representing the world.
+   */
   export
   function createTable(data: LifeWidget.Bit[][]): DocumentFragment {
     const fragment = document.createDocumentFragment();
