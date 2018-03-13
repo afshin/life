@@ -1,0 +1,27 @@
+{
+  "name": "game-of-life",
+  "version": "0.1.0",
+  "description": "An implementation of Conway's Game of Life",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "build:example": "npm run build && cd example && webpack",
+    "clean": "rimraf lib && rimraf example/dist && rimraf example/lib",
+    "watch": "tsc -w"
+  },
+  "author": "Afshin Darian",
+  "license": "MIT",
+  "devDependencies": {
+    "css-loader": "^0.28.10",
+    "rimraf": "^2.6.2",
+    "style-loader": "^0.20.3",
+    "ts-loader": "^4.0.1",
+    "typescript": "^2.7.2",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.11"
+  },
+  "dependencies": {
+    "@phosphor/messaging": "^1.2.2",
+    "@phosphor/widgets": "^1.5.0"
+  }
+}

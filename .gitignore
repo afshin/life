@@ -1,2 +1,5 @@
+example/dist
+example/lib
+lib
 node_modules
 .DS_Store
