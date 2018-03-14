@@ -8,6 +8,7 @@
     "build:example": "npm run build && cd example && webpack",
     "clean": "rimraf lib && rimraf example/dist && rimraf example/lib",
     "docs": "typedoc src --out docs",
+    "prepublish": "npm run build",
     "watch": "npm run clean && tsc --watch",
     "watch:example": "npm run build && cd example && webpack --watch"
   },
