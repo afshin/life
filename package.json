@@ -1,8 +1,12 @@
 {
   "name": "@afshin/life",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An implementation of Conway's Game of Life",
   "main": "lib/index.js",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
   "scripts": {
     "build": "npm run clean && tsc",
     "build:example": "npm run build && cd example && webpack",
