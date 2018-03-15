@@ -115,7 +115,14 @@ class LifeDataModel extends DataModel {
       }
 
       this._tick(this._swap, this._data);
-      this.emitChanged({ type: 'model-reset' });
+      this.emitChanged({
+        type: 'cells-changed',
+        rowSpan: this._data.length,
+        columnSpan: this._data[0].length,
+        region: 'body',
+        rowIndex: 0,
+        columnIndex: 0
+      });
     }, this._interval);
   }
 
