@@ -3,17 +3,18 @@ import {
 } from '@phosphor/widgets';
 
 import {
-  LifeWidget
+  createLife, LifeDataModel
 } from '../src';
 
 
 window.addEventListener('load', function () {
   const main = document.querySelector('main') as HTMLElement;
-  const life = (window as any).life = new LifeWidget({
-    initial: LifeWidget.random(40, 120),
+  const model = (window as any).model = new LifeDataModel({
+    initial: LifeDataModel.random(100, 100),
     interval: 50
   });
+  const grid = createLife(model);
 
-  Widget.attach(life, main);
-  life.start();
+  Widget.attach(grid, main);
+  model.start();
 });

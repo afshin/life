@@ -1,15 +1,4 @@
-.ad-LifeWidget {
-  display: table;
+.ad-Life.p-DataGrid {
+  width: 1200px;
+  height: 500px;
 }
-
-.ad-LifeWidget-row { display: table-row; }
-
-.ad-LifeWidget-row > div {
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  background: rgb(50, 185, 25);
-  display: table-cell;
-  width: 5px;
-  height: 5px;
-}
-
-.ad-LifeWidget-row > div.ad-mod-alive { background: black; }

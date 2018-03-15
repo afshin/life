@@ -1,4 +1,9 @@
 import {
+  DataGrid, DataModel, TextRenderer
+} from '@phosphor/datagrid';
+
+
+import {
   Widget
 } from '@phosphor/widgets';
 
@@ -26,42 +31,69 @@ const COLUMNS = 40;
 const INTERVAL = 250;
 
 
-/**
- * A class that renders a UI for Conway's Game of Life.
- */
+const LifeRenderer = new TextRenderer({
+  backgroundColor: ({ value }) => {
+    return value === 1 ? `rgb(0, 0, 0)`: `rgb(50, 185, 25)`;
+  },
+  format: () => ''
+});
+
+
 export
-class LifeWidget extends Widget {
-  /**
-   * Create a Game of Life widget.
-   */
-  constructor(options: LifeWidget.IOptions = { }) {
+function createLife(model: LifeDataModel): Widget {
+  const grid = new DataGrid({
+    baseColumnSize: 4,
+    baseRowSize: 4,
+    headerVisibility: 'none',
+    style: {
+      ...DataGrid.defaultStyle,
+      gridLineColor: `rgba(255, 255, 255, 0.5)`,
+      voidColor: 'transparent'
+    }
+  });
+
+  grid.model = model;
+  grid.addClass('ad-Life');
+  grid.cellRenderers.set('body', { }, LifeRenderer);
+
+  return grid;
+}
+
+
+export
+class LifeDataModel extends DataModel {
+
+  constructor(options: LifeDataModel.IOptions = { }) {
     super();
-
-    // Populate the initial state.
-    this.state = options.initial || LifeWidget.random();
     this._interval = options.interval || INTERVAL;
-    this._tick = options.tick || LifeWidget.tick;
-
-    this.addClass('ad-LifeWidget');
+    this._tick = options.tick || LifeDataModel.tick;
+    this.state = options.initial || LifeDataModel.random();
   }
 
   /**
    * The current state of the universe.
    */
-  get state(): LifeWidget.Bit[][] {
-    return this._next;
+  get state(): LifeDataModel.Bit[][] {
+    return this._data;
   }
-  set state(state: LifeWidget.Bit[][]) {
+  set state(state: LifeDataModel.Bit[][]) {
     if (this._started) {
       this.stop();
     }
+    this._data = state;
+    this._swap = JSON.parse(JSON.stringify(state));
+  }
 
-    // Populate the data.
-    this._prev = state;
-    this._next = JSON.parse(JSON.stringify(state));
+  rowCount(region: DataModel.RowRegion): number {
+    return this._data.length;
+  }
 
-    // Populate the node.
-    this._render();
+  columnCount(region: DataModel.ColumnRegion): number {
+    return this._data[0].length;
+  }
+
+  data(region: DataModel.CellRegion, row: number, column: number): any {
+    return this._data[row][column];
   }
 
   /**
@@ -75,22 +107,15 @@ class LifeWidget extends Widget {
     }
 
     this._started = window.setInterval(() => {
-      if (!this.isAttached) {
-        return;
-      }
-
       // Use a pointer to swap lists back so their names make semantic sense.
       if (swap = !swap) {
-        let prev = this._next;
-        this._next = this._prev;
-        this._prev = prev;
+        let swapped = this._data;
+        this._data = this._swap;
+        this._swap = swapped;
       }
 
-      // Calculate the new state.
-      this._tick(this._prev, this._next);
-
-      // Update the UI.
-      this.update();
+      this._tick(this._swap, this._data);
+      this.emitChanged({ type: 'model-reset' });
     }, this._interval);
   }
 
@@ -104,68 +129,19 @@ class LifeWidget extends Widget {
     }
   }
 
-  /**
-   * Handle `before-detach` messages.
-   */
-  protected onBeforeDetach(): void {
-    this.stop();
-  }
-
-  /**
-   * Handle `update-request` messages.
-   */
-  protected onUpdateRequest(): void {
-    const next = this._next;
-    const prev = this._prev;
-    const rows = next.length;
-    const columns = next[0].length;
-
-    for (let i = 0; i < rows; i += 1) {
-      for (let j = 0; j < columns; j += 1) {
-        let current = next[i][j];
-        let list = this._rows[i];
-
-        if (prev[i][j] !== current) {
-          list[j].className = current ? 'ad-mod-alive' : '';
-        }
-      }
-    }
-  }
-
-  /**
-   * Render the DOM nodes for a life widget.
-   */
-  private _render(): void {
-    const { node, state } = this;
-
-    // Empty the node and populate its HTML.
-    node.textContent = '';
-    node.appendChild(Private.createTable(state));
-
-    // Populate a cached handle to each row and cell.
-    const rows = node.querySelectorAll('.ad-LifeWidget-row');
-
-    this._rows = [];
-
-    for (let i = 0; i < rows.length; i += 1) {
-      this._rows.push(rows[i].querySelectorAll('div'));
-    }
-  }
-
   private _interval: number;
-  private _next: LifeWidget.Bit[][];
-  private _prev: LifeWidget.Bit[][];
-  private _rows: NodeListOf<HTMLElement>[];
+  private _data: LifeDataModel.Bit[][];
+  private _swap: LifeDataModel.Bit[][];
   private _started: number;
-  private _tick: LifeWidget.Tick;
+  private _tick: LifeDataModel.Tick;
 }
 
 
 /**
- * A namespace for `LifeWidget` statics.
+ * A namespace for `LifeDataModel` statics.
  */
 export
-namespace LifeWidget {
+namespace LifeDataModel {
   /**
    * The basic unit of life, `1` represents life.
    */
@@ -211,11 +187,11 @@ namespace LifeWidget {
    * @returns A two-dimensional array representing the state of the world.
    */
   export
-  function random(rows = ROWS, columns = COLUMNS, likelihood = LIKELIHOOD): LifeWidget.Bit[][] {
+  function random(rows = ROWS, columns = COLUMNS, likelihood = LIKELIHOOD): Bit[][] {
     const data = [];
 
     for (let i = 0; i < rows; i += 1) {
-      let row: LifeWidget.Bit[] = [];
+      let row: Bit[] = [];
 
       data.push(row);
 
@@ -284,47 +260,5 @@ namespace LifeWidget {
         output[i][j] = cell; // Record the tick value.
       }
     }
-  }
-}
-
-
-/**
- * A namespace for private module data.
- */
-namespace Private {
-  /**
-   * Create a row in the world.
-   */
-  export
-  function createRow(cells: LifeWidget.Bit[]): HTMLElement {
-    const row = document.createElement('div');
-    const columns = cells.length;
-
-    // Populate columns.
-    for (let i = 0; i < columns; i += 1) {
-      const cell = document.createElement('div');
-
-      cell.className = cells[i] ? 'ad-mod-alive' : '';
-      row.appendChild(cell);
-    }
-    row.className = 'ad-LifeWidget-row';
-
-    return row;
-  }
-
-  /**
-   * Create the DOM nodes representing the world.
-   */
-  export
-  function createTable(data: LifeWidget.Bit[][]): DocumentFragment {
-    const fragment = document.createDocumentFragment();
-    const rows = data.length;
-
-    // Populate rows.
-    for (let i = 0; i < rows; i += 1) {
-      fragment.appendChild(createRow(data[i]));
-    }
-
-    return fragment;
   }
 }
