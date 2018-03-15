@@ -1,6 +1,6 @@
 {
   "name": "@afshin/life",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "An implementation of Conway's Game of Life",
   "main": "lib/index.js",
   "files": [

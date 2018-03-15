@@ -1,4 +1,9 @@
 .ad-Life.p-DataGrid {
-  width: 1200px;
-  height: 500px;
+  min-width: 64px;
+  min-height: 64px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
