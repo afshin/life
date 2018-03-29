@@ -196,7 +196,7 @@ namespace Life {
      *
      * #### Notes
      * Instead of accepting a single state array, this function takes an `input`
-     * and an `output` array to faciliate swapping back and forth between
+     * and an `output` array to facilitate swapping back and forth between
      * generation arrays without needing to reallocate memory. The `input` and
      * `output` arrays must have the same dimensions.
      */
