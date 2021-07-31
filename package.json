@@ -1,35 +1,35 @@
 {
   "name": "@afshin/life",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An implementation of Conway's Game of Life",
   "main": "lib/index.js",
   "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "lib/*.{d.ts,js,js.map}"
   ],
   "scripts": {
-    "build": "npm run clean && tsc",
-    "build:example": "npm run build && cd example && webpack",
-    "clean": "rimraf lib && rimraf example/dist && rimraf example/lib",
+    "build": "tsc && webpack",
+    "clean": "rimraf dist docs lib node_modules",
     "docs": "typedoc src --out docs",
-    "prepublish": "npm run build",
-    "watch": "npm run clean && tsc --watch",
-    "watch:example": "npm run build && cd example && webpack --watch"
+    "watch": "webpack --watch"
   },
-  "author": "Afshin Darian",
+  "author": "Afshin T. Darian",
   "license": "MIT",
   "devDependencies": {
-    "css-loader": "^0.28.10",
-    "rimraf": "^2.6.2",
-    "style-loader": "^0.20.3",
-    "ts-loader": "^4.0.1",
-    "typedoc": "^0.11.1",
-    "typescript": "^2.7.2",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.11"
+    "css-loader": "^5.0.1",
+    "eslint": "^7.27.0",
+    "html-loader": "^2.1.2",
+    "rimraf": "~3.0.0",
+    "style-loader": "~2.0.0",
+    "ts-loader": "^9.1.2",
+    "typedoc": "~0.20.0-beta.27",
+    "typescript": "~4.1.3",
+    "webpack": "^5.3.1",
+    "webpack-cli": "^4.1.0"
   },
   "dependencies": {
-    "@phosphor/datagrid": "^0.1.5",
-    "@phosphor/widgets": "^1.5.0"
+    "@lumino/datagrid": "^0.20.0",
+    "@lumino/disposable": "^1.7.0",
+    "@lumino/polling": "^1.6.0",
+    "@lumino/widgets": "^1.19.0"
   }
 }

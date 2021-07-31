@@ -1,6 +1,7 @@
+default.profraw
+dist
 docs
-example/dist
-example/lib
+.DS_Store
+.ipynb_checkpoints
 lib
 node_modules
-.DS_Store
