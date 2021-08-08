@@ -1,15 +1,15 @@
 const webpack = require('webpack');
 
 module.exports = {
-  entry: './index.ts',
+  entry: './src/example.ts',
   mode: 'development',
+  devtool: 'eval-source-map',
   module: {
     rules: [
-      { test: /\.css?$/, loader: ['style-loader', 'css-loader'] },
-      { test: /\.ts?$/, loader: 'ts-loader' }
+      { test: /\.tsx?$/, loader: 'ts-loader' }
     ]
   },
   output: { filename: 'bundle.js' },
   optimization: { minimize: true },
-  resolve: { extensions: ['.css', '.js', '.ts'] }
+  resolve: { extensions: ['.css', '.js', '.ts', '.tsx'] }
 };
