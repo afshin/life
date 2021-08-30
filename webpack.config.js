@@ -1,3 +1,4 @@
+const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
@@ -9,7 +10,12 @@ module.exports = {
       { test: /\.tsx?$/, loader: 'ts-loader' }
     ]
   },
-  output: { filename: 'bundle.js' },
+  output: {
+    clean: true,
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    pathinfo: false
+  },
   optimization: { minimize: true },
   resolve: { extensions: ['.css', '.js', '.ts', '.tsx'] }
 };
